@@ -16,18 +16,6 @@ import java.util.Date;
  */
 public class ServerResponse{
 
-    public static ResponseEntity file(File file) {
-        return init()
-                .filename(file.getName())
-                .file(file);
-    }
-
-    public static ResponseEntity file(MemoryFileOutputStream file) {
-        return init()
-                .filename(file.getFilename())
-                .file(file);
-    }
-
     @Data
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     private static class ResponseBody implements Serializable {
@@ -205,5 +193,15 @@ public class ServerResponse{
         return init().msg(msg).error();
     }
 
+    public static ResponseEntity file(File file) {
+        return init()
+                .filename(file.getName())
+                .file(file);
+    }
 
+    public static ResponseEntity file(MemoryFileOutputStream file) {
+        return init()
+                .filename(file.getFilename())
+                .file(file);
+    }
 }
