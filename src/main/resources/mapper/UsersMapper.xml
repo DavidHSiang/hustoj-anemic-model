@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zjc.hustoj.user.dao.UserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.zjc.hustoj.user.entity.UserEntity" id="integrationChangeHistoryMap">
+        <result property="userId" column="user_id"/>
+        <result property="email" column="email"/>
+        <result property="submit" column="submit"/>
+        <result property="solved" column="solved"/>
+        <result property="defunct" column="defunct"/>
+        <result property="ip" column="ip"/>
+        <result property="accessTime" column="accesstime"/>
+        <result property="volume" column="volume"/>
+        <result property="language" column="language"/>
+        <result property="password" column="password"/>
+        <result property="regTime" column="reg_time"/>
+        <result property="nick" column="nick"/>
+        <result property="school" column="school"/>
+    </resultMap>
+
+
+
+</mapper>
