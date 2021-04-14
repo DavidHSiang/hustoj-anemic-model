@@ -1,5 +1,7 @@
 package com.zjc.hustoj.problem.xml.element;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -13,6 +15,7 @@ import java.util.List;
  */
 @Setter
 @XmlRootElement(name = "fps")
+@NoArgsConstructor
 public class ProblemXmlBody {
 
     private List<ProblemXmlEntity> entities;
@@ -20,5 +23,13 @@ public class ProblemXmlBody {
     @XmlElements(value = { @XmlElement(name = "item", type = ProblemXmlEntity.class) })
     public List<ProblemXmlEntity> getEntities() {
         return entities;
+    }
+
+    private ProblemXmlBody(List<ProblemXmlEntity> entities) {
+        this.entities = entities;
+    }
+
+    public static ProblemXmlBody create(List<ProblemXmlEntity> entities){
+        return new ProblemXmlBody(entities);
     }
 }

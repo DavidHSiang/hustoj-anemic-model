@@ -3,10 +3,10 @@ package com.zjc.hustoj.problem.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zjc.hustoj.core.utils.PageUtils;
 import com.zjc.hustoj.problem.entity.ProblemEntity;
-import com.zjc.hustoj.problem.vo.ProblemDetailVo;
-import com.zjc.hustoj.problem.vo.ProblemPageReqVo;
-import com.zjc.hustoj.problem.vo.ProblemPageRespVo;
-import com.zjc.hustoj.problem.vo.ProblemSaveVo;
+import com.zjc.hustoj.problem.vo.*;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * @author David Hsiang
@@ -23,4 +23,8 @@ public interface ProblemService extends IService<ProblemEntity> {
     ProblemDetailVo detail(Integer problemId);
 
     Integer saveOrUpdate(ProblemSaveVo problemDetailVo, String currentUserId);
+
+    File exportByIds(List<Integer> ids);
+
+    File exportByRange(RangeInfo<ProblemEntity> rangeInfo);
 }

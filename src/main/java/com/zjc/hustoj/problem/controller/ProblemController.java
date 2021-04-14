@@ -4,16 +4,19 @@ import com.zjc.hustoj.core.constant.ServerResponse;
 import com.zjc.hustoj.core.controller.BaseController;
 import com.zjc.hustoj.core.utils.PageUtils;
 import com.zjc.hustoj.core.utils.xml.JAXBUtils;
+import com.zjc.hustoj.problem.entity.ProblemEntity;
 import com.zjc.hustoj.problem.service.ProblemService;
-import com.zjc.hustoj.problem.vo.ProblemDetailVo;
-import com.zjc.hustoj.problem.vo.ProblemPageReqVo;
-import com.zjc.hustoj.problem.vo.ProblemPageRespVo;
-import com.zjc.hustoj.problem.vo.ProblemSaveVo;
+import com.zjc.hustoj.problem.vo.*;
 import com.zjc.hustoj.problem.xml.element.ProblemXmlBody;
 import com.zjc.hustoj.problem.xml.element.ProblemXmlEntity;
 import com.zjc.hustoj.problem.xml.element.testcase.TestCase;
 import com.zjc.hustoj.problem.xml.element.testcase.TestCaseList;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +24,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -97,63 +101,44 @@ public class ProblemController extends BaseController {
         }
     }
 
-    @GetMapping(value = "/export")
-    public void export(HttpServletResponse response) {
+    @PostMapping("/exportByIds")
+    public ResponseEntity exportByIds(@RequestBody List<Integer> ids) {
         try {
-            response.setHeader("Content-Disposition", "attachment; filename=" + "test.xml" + ".bpmn20.xml");
-            response.setContentType("application/octet-stream");
-            JAXBUtils.generateXML(testData(), response.getOutputStream());
-            response.flushBuffer();
-        } catch (IOException ex) {
-            log.info("Error writing file to output stream.", ex);
-            throw new RuntimeException("IOError writing file to output stream");
+            File file = problemService.exportByIds(ids);
+            return ServerResponse.file(file);
+        } catch (Exception e) {
+            log.error("题目导出失败！", e);
+            return ServerResponse.errorMsg(e.getMessage());
         }
-
     }
 
-    private ProblemXmlBody testData(){
-        List<ProblemXmlEntity> problemXmlEntities = new ArrayList<>();
-
-        ProblemXmlEntity problem_1 = new ProblemXmlEntity();
-        problem_1.setTitle("大整数减法（高精度-低精度）111");
-        problem_1.setTimeLimit(new BigDecimal(1.000));
-        problem_1.setMemoryLimit(128);
-        problem_1.setDescription("<span style=\"color:#333333;font-family:&quot;font-size:14px;background-color:#FFFFFF;\">求一个大的正整数减另一个小的正整数的差。</span>");
-        problem_1.setInput("<span style=\"color:#333333;font-family:&quot;font-size:14px;background-color:#FFFFFF;\">共2行，第1行是被减数a，第2行是减数b(a &gt; b)。大整数不超过200位，小<span style=\"color:#333333;font-family:&quot;font-size:14px;background-color:#FFFFFF;\">整数不超过10位，</span>不会有多余的前导零。</span>");
-        problem_1.setOutput("<span style=\"color:#333333;font-family:&quot;font-size:14px;background-color:#FFFFFF;\">一行，即所求的差。</span>");
-        problem_1.setSampleInput("9999999999999999999999999999999999999\n99999");
-        problem_1.setSampleOutput("9999999999999999999999999999999900000");
-
-        TestCaseList testDataElements = new TestCaseList();
-
-        TestCase testData1 = new TestCase("testInputValue111", "testOutputValue111");
-        TestCase testData2 = new TestCase("testInputValue222", "testOutputValue222");
-        TestCase testData3 = new TestCase("test\nInputValue333", "testOutputValue333");
-
-        testDataElements.add(testData1);
-        testDataElements.add(testData2);
-        testDataElements.add(testData3);
-
-        problem_1.setDataList(testDataElements);
-
-        problem_1.setHint("123123123hint");
-
-        ProblemXmlEntity problem_2 = new ProblemXmlEntity();
-        problem_2.setTitle("大整数减法（高精度-低精度）222");
-        problem_2.setTimeLimit(new BigDecimal(1.000));
-        problem_2.setMemoryLimit(128);
-        problem_2.setDescription("<span style=\"color:#333333;font-family:&quot;font-size:14px;background-color:#FFFFFF;\">求一个大的正整数减另一个小的正整数的差。</span>");
-        problem_2.setInput("<span style=\"color:#333333;font-family:&quot;font-size:14px;background-color:#FFFFFF;\">共2行，第1行是被减数a，第2行是减数b(a &gt; b)。大整数不超过200位，小<span style=\"color:#333333;font-family:&quot;font-size:14px;background-color:#FFFFFF;\">整数不超过10位，</span>不会有多余的前导零。</span>");
-        problem_2.setOutput("<span style=\"color:#333333;font-family:&quot;font-size:14px;background-color:#FFFFFF;\">一行，即所求的差。</span>");
-        problem_2.setSampleInput("9999999999999999999999999999999999999\n99999");
-        problem_2.setSampleOutput("9999999999999999999999999999999900000");
-        problem_2.setDataList(testDataElements);
-        problem_2.setHint("123123123hint");
-
-        problemXmlEntities.add(problem_1);
-        problemXmlEntities.add(problem_2);
-        ProblemXmlBody problemXmlBody = new ProblemXmlBody();
-        problemXmlBody.setEntities(problemXmlEntities);
-        return problemXmlBody;
+    @PostMapping("/exportByRange")
+    public ResponseEntity exportByRange(@RequestBody RangeInfo rangeInfo) {
+        try {
+            File file = problemService.exportByRange(rangeInfo);
+            return ServerResponse.file(file);
+        } catch (Exception e) {
+            log.error("题目导出失败！", e);
+            return ServerResponse.errorMsg(e.getMessage());
+        }
     }
+
+    public static ResponseEntity<byte[]> download(String fileName, ByteArrayOutputStream byteOutPutStream) {
+        //下载文件
+        try {
+            new ByteArrayOutputStream();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            // 文件名称
+            headers.setContentDispositionFormData("attachment",
+                    new String(fileName.getBytes("GBK"), "ISO8859-1"));
+            ResponseEntity<byte[]> responseEntity = new ResponseEntity<byte[]>(byteOutPutStream.toByteArray(), headers, HttpStatus.OK);
+            return responseEntity;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

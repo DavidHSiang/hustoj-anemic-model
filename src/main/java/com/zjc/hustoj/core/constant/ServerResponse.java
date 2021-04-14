@@ -2,15 +2,47 @@ package com.zjc.hustoj.core.constant;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author David Hsiang
  * @email ls5129469@163.com
  */
 public class ServerResponse{
+
+    public static ResponseEntity file(File file) {
+        return
+            init()
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .header("Content-Disposition", "attachment; filename=" + file.getName())
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .header("Last-Modified", new Date().toString())
+                .header("ETag", String.valueOf(System.currentTimeMillis()))
+            .file(file);
+    }
+
+    public static ResponseEntity file(MemoryFileOutputStream file) {
+        return
+                init()
+                        .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                        .header("Content-Disposition", "attachment; filename=" + file.getFileName())
+                        .header("Pragma", "no-cache")
+                        .header("Expires", "0")
+                        .header("Last-Modified", new Date().toString())
+                        .header("ETag", String.valueOf(System.currentTimeMillis()))
+                        .file(file);
+    }
 
     @Data
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -71,9 +103,19 @@ public class ServerResponse{
             return bodyBuilder.body(responseBody);
         }
 
+        public ResponseEntity file(File file) {
+            FileSystemResource body = new FileSystemResource(file);
+            return bodyBuilder.body(body);
+        }
+
+        public ResponseEntity file(OutputStream outputStream) {
+            return bodyBuilder.body(outputStream);
+        }
+
         public ResponseEntity status(int status) {
             return status(status,null);
         }
+
     }
 
 
