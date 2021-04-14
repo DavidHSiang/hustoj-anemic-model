@@ -1,6 +1,6 @@
 package com.zjc.hustoj.core.constant;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
 import java.io.File;
@@ -14,7 +14,7 @@ import java.util.Date;
  */
 public class ServerResponse{
 
-    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private static class ResponseBody implements Serializable {
         private int status;
         private String msg;
