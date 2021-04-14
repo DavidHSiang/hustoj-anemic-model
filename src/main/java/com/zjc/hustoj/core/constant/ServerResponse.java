@@ -1,10 +1,8 @@
 package com.zjc.hustoj.core.constant;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.Data;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
-
 import java.io.File;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -16,12 +14,35 @@ import java.util.Date;
  */
 public class ServerResponse{
 
-    @Data
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     private static class ResponseBody implements Serializable {
         private int status;
         private String msg;
         private Object data;
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+
+        public Object getData() {
+            return data;
+        }
+
+        public void setData(Object data) {
+            this.data = data;
+        }
     }
 
     public static class DefaultBuilder implements FileBuilder, ResponseBodyBuilder {
