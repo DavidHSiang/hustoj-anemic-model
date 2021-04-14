@@ -3,13 +3,9 @@ package com.zjc.hustoj.core.constant;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Date;
@@ -21,27 +17,15 @@ import java.util.Date;
 public class ServerResponse{
 
     public static ResponseEntity file(File file) {
-        return
-            init()
-                .header("Cache-Control", "no-cache, no-store, must-revalidate")
-                .header("Content-Disposition", "attachment; filename=" + file.getName())
-                .header("Pragma", "no-cache")
-                .header("Expires", "0")
-                .header("Last-Modified", new Date().toString())
-                .header("ETag", String.valueOf(System.currentTimeMillis()))
-            .file(file);
+        return init()
+                .filename(file.getName())
+                .file(file);
     }
 
     public static ResponseEntity file(MemoryFileOutputStream file) {
-        return
-                init()
-                        .header("Cache-Control", "no-cache, no-store, must-revalidate")
-                        .header("Content-Disposition", "attachment; filename=" + file.getFileName())
-                        .header("Pragma", "no-cache")
-                        .header("Expires", "0")
-                        .header("Last-Modified", new Date().toString())
-                        .header("ETag", String.valueOf(System.currentTimeMillis()))
-                        .file(file);
+        return init()
+                .filename(file.getFilename())
+                .file(file);
     }
 
     @Data
@@ -52,78 +36,140 @@ public class ServerResponse{
         private Object data;
     }
 
-    public static class Builder{
+    public static class DefaultBuilder implements FileBuilder, ResponseBodyBuilder {
 
         private ResponseEntity.BodyBuilder bodyBuilder;
 
         private ResponseBody responseBody;
 
-        public Builder() {
+        public DefaultBuilder() {
             this.bodyBuilder = ResponseEntity.ok();
             this.responseBody = new ResponseBody();
         }
 
+        @Override
         public ResponseEntity ok() {
             return ok(null);
         }
 
+        @Override
         public ResponseEntity ok(Object data) {
             return status(ResponseCode.SUCCESS.getCode(), data);
         }
 
+        @Override
         public ResponseEntity ok(String msg, Object data){
             return this.msg(msg).ok(data);
         }
 
+        @Override
         public ResponseEntity error() {
             return error(null);
         }
 
+        @Override
         public ResponseEntity error(Object data) {
             return status(ResponseCode.ERROR.getCode(), data);
         }
 
+        @Override
         public ResponseEntity error(String msg, Object data){
             return this.msg(msg).error(data);
         }
 
-        public Builder msg(String msg){
-            this.responseBody.msg = msg;
-            return this;
-        }
-
-        public Builder header(String key, String... val) {
-            this.bodyBuilder.header(key, val);
-            return this;
-        }
-
+        @Override
         public ResponseEntity status(int status, Object data) {
             this.responseBody.status = status;
             this.responseBody.data = data;
             return bodyBuilder.body(responseBody);
         }
 
+        @Override
         public ResponseEntity file(File file) {
             FileSystemResource body = new FileSystemResource(file);
             return bodyBuilder.body(body);
         }
 
+        @Override
         public ResponseEntity file(OutputStream outputStream) {
             return bodyBuilder.body(outputStream);
         }
 
+        @Override
         public ResponseEntity status(int status) {
             return status(status,null);
         }
 
+        @Override
+        public DefaultBuilder header(String key, String... val) {
+            this.bodyBuilder.header(key, val);
+            return this;
+        }
+
+        @Override
+        public ResponseBodyBuilder msg(String msg){
+            this.responseBody.msg = msg;
+            return this;
+        }
+
+        @Override
+        public FileBuilder filename(String filename) {
+            return this
+                    .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                    .header("Content-Disposition", "attachment; filename=" + filename)
+                    .header("Pragma", "no-cache")
+                    .header("Expires", "0")
+                    .header("Last-Modified", new Date().toString())
+                    .header("ETag", String.valueOf(System.currentTimeMillis()));
+        }
+
     }
 
+    public interface ResponseBodyBuilder extends ResponseBuilder{
 
-    private static Builder init(){
-        return new Builder();
+        public ResponseEntity ok() ;
+
+        public ResponseEntity ok(Object data) ;
+
+        public ResponseEntity ok(String msg, Object data);
+
+        public ResponseEntity error() ;
+
+        public ResponseEntity error(Object data) ;
+
+        public ResponseEntity error(String msg, Object data);
+
+        public ResponseEntity status(int status, Object data) ;
+
+        public ResponseEntity status(int status) ;
+
+        public ResponseBuilder msg(String msg);
+
+        public ResponseBuilder header(String key, String... val) ;
+
     }
 
-    public static Builder header(String key, String... val) {
+    public interface FileBuilder extends ResponseBuilder{
+
+        public ResponseEntity file(File file) ;
+
+        public ResponseEntity file(OutputStream outputStream) ;
+
+        public ResponseBuilder header(String key, String... val) ;
+
+        public ResponseBuilder filename(String filename);
+
+    }
+
+    public interface ResponseBuilder{
+
+    }
+
+    private static DefaultBuilder init(){
+        return new DefaultBuilder();
+    }
+
+    public static DefaultBuilder header(String key, String... val) {
         return init().header(key, val);
     }
 

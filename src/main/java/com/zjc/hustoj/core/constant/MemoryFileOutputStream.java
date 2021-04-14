@@ -8,22 +8,22 @@ import java.io.ByteArrayOutputStream;
  * @date 2021/04/14/11:44 下午
  */
 public class MemoryFileOutputStream extends ByteArrayOutputStream {
-    private String fileName;
+    private String filename;
 
-    public MemoryFileOutputStream(String fileName) {
-        this.fileName = fileName;
+    public MemoryFileOutputStream(String filename) {
+        this.filename = filename;
     }
 
-    public MemoryFileOutputStream(int size, String fileName) {
+    public MemoryFileOutputStream(int size, String filename) {
         super(size);
-        this.fileName = fileName;
+        this.filename = filename;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }
