@@ -2,13 +2,23 @@ package com.zjc.hustoj.core.utils.xml;
 
 import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
 import com.sun.xml.internal.bind.marshaller.NoEscapeHandler;
+import com.zjc.hustoj.core.constant.MemoryFileOutputStream;
+import com.zjc.hustoj.core.exception.ServiceException;
+import com.zjc.hustoj.problem.xml.element.ProblemXmlBody;
+import com.zjc.hustoj.problem.xml.element.ProblemXmlEntity;
+import com.zjc.hustoj.problem.xml.element.testcase.TestCase;
+import com.zjc.hustoj.problem.xml.element.testcase.TestCaseList;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.io.output.XmlStreamWriter;
+import org.xml.sax.ContentHandler;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.io.OutputStream;
+import javax.xml.soap.Node;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.transform.Result;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,65 +27,66 @@ import java.util.List;
  * @author David Hsiang
  * @date 2021/04/12/11:23 下午
  */
+
 public class JAXBUtils {
+    
+    private static CharacterEscapeHandler escapeHandler = NoEscapeHandler.theInstance;
 
-    public static void generateXML(Object entity, OutputStream output) {
+    private Marshaller marshaller ;
+    private Object entity;
 
-        // File file = new File("/Users/david/Documents/person.xml");
-        JAXBContext jc = null;
-        try {
-            //根据Person类生成上下文对象
-            jc = JAXBContext.newInstance(entity.getClass());
-            //从上下文中获取Marshaller对象，用作将bean编组(转换)为xml
-            Marshaller ma = jc.createMarshaller();
+    private JAXBUtils(Object entity) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(entity.getClass());
+        this.marshaller = jaxbContext.createMarshaller();
+        this.marshaller.setProperty("com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler", escapeHandler);
+        this.marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        this.marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        this.marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);
 
-            CharacterEscapeHandler escapeHandler = NoEscapeHandler.theInstance;
-            ma.setProperty("com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler", escapeHandler);
-
-            //以下是为生成xml做的一些配置
-            //格式化输出，即按标签自动换行，否则就是一行输出
-            ma.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            //设置编码（默认编码就是utf-8）
-            ma.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            //是否省略xml头信息，默认不省略（false）
-            ma.setProperty(Marshaller.JAXB_FRAGMENT, false);
-
-            //编组
-            // ma.marshal(entity, file);
-            ma.marshal(entity,output);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
+        this.entity = entity;
     }
 
-    public static File generateXML(Object entity, String fileName) {
+    public static JAXBUtils entity(Object entity) throws JAXBException {
+        return new JAXBUtils(entity);
+    }
 
-         File file = new File(fileName);
-        JAXBContext jc = null;
-        try {
-            //根据Person类生成上下文对象
-            jc = JAXBContext.newInstance(entity.getClass());
-            //从上下文中获取Marshaller对象，用作将bean编组(转换)为xml
-            Marshaller ma = jc.createMarshaller();
+    public Result writeTo(Result result) throws JAXBException {
+        marshaller.marshal(this.entity, result);
+        return result;
+    }
 
-            CharacterEscapeHandler escapeHandler = NoEscapeHandler.theInstance;
-            ma.setProperty("com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler", escapeHandler);
+    public <T extends OutputStream> T writeTo(T outputStream) throws JAXBException {
+        marshaller.marshal(this.entity, outputStream);
+        return outputStream;
+    }
 
-            //以下是为生成xml做的一些配置
-            //格式化输出，即按标签自动换行，否则就是一行输出
-            ma.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            //设置编码（默认编码就是utf-8）
-            ma.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            //是否省略xml头信息，默认不省略（false）
-            ma.setProperty(Marshaller.JAXB_FRAGMENT, false);
+    public <T extends File> T writeTo(T file) throws JAXBException {
+        marshaller.marshal(this.entity, file);
+        return file;
+    }
 
-            //编组
-            // ma.marshal(entity, file);
-            ma.marshal(entity,file);
-            return file;
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public <T extends Writer> T writeTo(T writer) throws JAXBException {
+        marshaller.marshal(this.entity, writer);
+        return writer;
+    }
+
+    public <T extends ContentHandler> T writeTo(T handler) throws JAXBException {
+        marshaller.marshal(this.entity, handler);
+        return handler;
+    }
+
+    public <T extends Node> T writeTo(T node) throws JAXBException {
+        marshaller.marshal(this.entity, node);
+        return node;
+    }
+
+    public <T extends XmlStreamWriter> T writeTo(T streamWriter) throws JAXBException {
+        marshaller.marshal(this.entity, streamWriter);
+        return streamWriter;
+    }
+
+    public <T extends XMLEventWriter> T writeTo(T eventWriter) throws JAXBException {
+        marshaller.marshal(this.entity, eventWriter);
+        return eventWriter;
     }
 }

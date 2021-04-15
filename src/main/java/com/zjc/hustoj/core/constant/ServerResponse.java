@@ -1,8 +1,13 @@
 package com.zjc.hustoj.core.constant;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -100,8 +105,18 @@ public class ServerResponse{
         }
 
         @Override
-        public ResponseEntity file(OutputStream outputStream) {
-            return bodyBuilder.body(outputStream);
+        public ResponseEntity file(ByteArrayOutputStream outputStream) {
+//            HttpHeaders headers = new HttpHeaders();
+//            MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+//            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+//
+//            FileSystemResource body = new FileSystemResource(file);
+            // 文件名称
+//            headers.setContentDispositionFormData("attachment","text.xml");
+            final ByteArrayResource byteArrayResource = new ByteArrayResource(outputStream.toByteArray());
+            return bodyBuilder
+//                    .headers(headers)
+                    .body(byteArrayResource);
         }
 
         @Override
@@ -162,7 +177,7 @@ public class ServerResponse{
 
         public ResponseEntity file(File file) ;
 
-        public ResponseEntity file(OutputStream outputStream) ;
+        public ResponseEntity file(ByteArrayOutputStream outputStream) ;
 
         public ResponseBuilder header(String key, String... val) ;
 
@@ -220,9 +235,9 @@ public class ServerResponse{
                 .file(file);
     }
 
-    public static ResponseEntity file(MemoryFileOutputStream file) {
+    public static ResponseEntity file(ByteArrayOutputStream file) {
         return init()
-                .filename(file.getFilename())
+                .filename("text.xml")
                 .file(file);
     }
 }

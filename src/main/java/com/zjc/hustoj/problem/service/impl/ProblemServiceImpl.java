@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjc.hustoj.core.constant.Const;
+import com.zjc.hustoj.core.constant.MemoryFileOutputStream;
 import com.zjc.hustoj.core.exception.ServiceException;
 import com.zjc.hustoj.core.utils.BeanUtils;
 import com.zjc.hustoj.core.utils.PageUtils;
@@ -18,11 +19,16 @@ import com.zjc.hustoj.problem.xml.element.ProblemXmlBody;
 import com.zjc.hustoj.problem.xml.element.ProblemXmlEntity;
 import com.zjc.hustoj.problem.xml.element.testcase.TestCase;
 import com.zjc.hustoj.problem.xml.element.testcase.TestCaseList;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.xml.bind.JAXBException;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -101,32 +107,46 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemDao, ProblemEntity> i
     }
 
     @Override
-    public File exportByIds(List<Integer> ids) {
-        String fileName = StringUtils.join(ids.toArray(), "+") + ".xml";
-        List<ProblemEntity> problemEntities = this.list(new QueryWrapper<ProblemEntity>().in("problem_id", ids));
+    public ByteArrayOutputStream exportByIds(List<Integer> ids) {
+        String filename = StringUtils.join(ids.toArray(), "+") + ".xml";
+        QueryWrapper<ProblemEntity> wrapper = new QueryWrapper<ProblemEntity>().in("problem_id", ids);
 
-        List<ProblemXmlEntity> problemXmlEntities = BeanUtils.convertList(problemEntities, ProblemXmlEntity.class);
-
-        //todo 添加测试用例
-
-        ProblemXmlBody problemXmlBody = ProblemXmlBody.create(problemXmlEntities);
-
-        return JAXBUtils.generateXML(problemXmlBody, fileName);
+        return exportByWrapper(filename, wrapper);
     }
 
     @Override
-    public File exportByRange(RangeInfo<ProblemEntity> rangeInfo) {
-        String fileName = rangeInfo.getGeInfo() + "-" + rangeInfo.getLeInfo() + ".xml";
-        List<ProblemEntity> problemEntities = this.list(rangeInfo.getWrapper("problem_id"));
+    public ByteArrayOutputStream exportByRange(RangeInfo<ProblemEntity> rangeInfo)  {
+        String filename = rangeInfo.getGeInfo() + "-" + rangeInfo.getLeInfo() + ".xml";
+        QueryWrapper<ProblemEntity> wrapper = rangeInfo.getWrapper("problem_id");
+
+        return exportByWrapper(filename, wrapper);
+    }
+
+    private ByteArrayOutputStream exportByWrapper(String filename, QueryWrapper<ProblemEntity> wrapper){
+
+        List<ProblemEntity> problemEntities = this.list(wrapper);
 
         List<ProblemXmlEntity> problemXmlEntities = BeanUtils.convertList(problemEntities, ProblemXmlEntity.class);
 
         //todo 添加测试用例
 
         ProblemXmlBody problemXmlBody = ProblemXmlBody.create(problemXmlEntities);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        return JAXBUtils.generateXML(problemXmlBody, fileName);
+//        IOUtils
+        try {
+            return JAXBUtils.entity(problemXmlBody).writeTo(outputStream);
+        } catch (JAXBException e) {
+            throw new ServiceException("xml 导出失败", e);
+        }finally {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                log.error("输出流关闭失败:", e);
+            }
+        }
     }
+
 
     private ProblemXmlBody testData(){
         List<ProblemXmlEntity> problemXmlEntities = new ArrayList<>();

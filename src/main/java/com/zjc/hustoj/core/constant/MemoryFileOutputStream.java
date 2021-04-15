@@ -19,11 +19,8 @@ public class MemoryFileOutputStream extends ByteArrayOutputStream {
         this.filename = filename;
     }
 
-    public String getFilename() {
+    public String filename() {
         return filename;
     }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
 }

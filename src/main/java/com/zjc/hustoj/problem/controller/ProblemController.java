@@ -1,5 +1,6 @@
 package com.zjc.hustoj.problem.controller;
 
+import com.zjc.hustoj.core.constant.MemoryFileOutputStream;
 import com.zjc.hustoj.core.constant.ServerResponse;
 import com.zjc.hustoj.core.controller.BaseController;
 import com.zjc.hustoj.core.utils.PageUtils;
@@ -104,19 +105,22 @@ public class ProblemController extends BaseController {
     @PostMapping("/exportByIds")
     public ResponseEntity exportByIds(@RequestBody List<Integer> ids) {
         try {
-            File file = problemService.exportByIds(ids);
-            return ServerResponse.file(file);
+            ByteArrayOutputStream outputStream = problemService.exportByIds(ids);
+
+//            File outputStream = new File(("/Users/david/Documents/ABC.xml"));
+            return ServerResponse.file(outputStream);
+//            return download("test.xml", outputStream);
         } catch (Exception e) {
             log.error("题目导出失败！", e);
             return ServerResponse.errorMsg(e.getMessage());
         }
     }
 
-    @PostMapping("/exportByRange")
-    public ResponseEntity exportByRange(@RequestBody RangeInfo rangeInfo) {
+    @GetMapping("/exportByRange")
+    public ResponseEntity exportByRange(RangeInfo rangeInfo) {
         try {
-            File file = problemService.exportByRange(rangeInfo);
-            return ServerResponse.file(file);
+            ByteArrayOutputStream outputStream = problemService.exportByRange(rangeInfo);
+            return ServerResponse.file(outputStream);
         } catch (Exception e) {
             log.error("题目导出失败！", e);
             return ServerResponse.errorMsg(e.getMessage());
@@ -128,6 +132,7 @@ public class ProblemController extends BaseController {
         try {
             new ByteArrayOutputStream();
             HttpHeaders headers = new HttpHeaders();
+            MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             // 文件名称
             headers.setContentDispositionFormData("attachment",
@@ -139,6 +144,4 @@ public class ProblemController extends BaseController {
         }
         return null;
     }
-
-
 }
