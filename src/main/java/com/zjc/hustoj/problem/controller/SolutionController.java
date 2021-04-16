@@ -3,29 +3,18 @@ package com.zjc.hustoj.problem.controller;
 import com.zjc.hustoj.core.constant.ServerResponse;
 import com.zjc.hustoj.core.controller.BaseController;
 import com.zjc.hustoj.core.utils.PageUtils;
-import com.zjc.hustoj.core.utils.xml.JAXBUtils;
 import com.zjc.hustoj.problem.constant.CodeLanguage;
 import com.zjc.hustoj.problem.constant.RunResult;
-import com.zjc.hustoj.problem.service.ProblemService;
 import com.zjc.hustoj.problem.service.SolutionService;
 import com.zjc.hustoj.problem.vo.*;
-import com.zjc.hustoj.problem.xml.element.ProblemXmlBody;
-import com.zjc.hustoj.problem.xml.element.ProblemXmlEntity;
-import com.zjc.hustoj.problem.xml.element.testcase.TestCase;
-import com.zjc.hustoj.problem.xml.element.testcase.TestCaseList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author David Hsiang
