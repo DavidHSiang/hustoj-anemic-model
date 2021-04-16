@@ -2,20 +2,15 @@ package com.zjc.hustoj.file.controller;
 
 import com.sun.security.auth.module.UnixSystem;
 import com.zjc.hustoj.core.constant.ServerResponse;
-import com.zjc.hustoj.core.utils.xml.JAXBUtils;
 import com.zjc.hustoj.file.model.FileExplorer;
-import com.zjc.hustoj.problem.vo.ProblemDetailVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.HandlerMapping;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
