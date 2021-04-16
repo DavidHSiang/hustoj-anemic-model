@@ -3,14 +3,11 @@ package com.zjc.hustoj.core.constant;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.Date;
 
 /**
@@ -56,9 +53,18 @@ public class ServerResponse{
 
         private ResponseBody responseBody;
 
+        private String filename;
+
+        private final String DEFAULT_FILENAME = "未命名文件";
+
         public DefaultBuilder() {
-            this.bodyBuilder = ResponseEntity.ok();
+            this(HttpStatus.OK);
+        }
+
+        public DefaultBuilder(HttpStatus httpStatus){
+            this.bodyBuilder = ResponseEntity.status(httpStatus);
             this.responseBody = new ResponseBody();
+            this.filename = DEFAULT_FILENAME;
         }
 
         @Override
@@ -100,23 +106,20 @@ public class ServerResponse{
 
         @Override
         public ResponseEntity file(File file) {
-            FileSystemResource body = new FileSystemResource(file);
-            return bodyBuilder.body(body);
+            FileSystemResource resource = new FileSystemResource(file);
+            return this.file(resource);
         }
 
         @Override
-        public ResponseEntity file(ByteArrayOutputStream outputStream) {
-//            HttpHeaders headers = new HttpHeaders();
-//            MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
-//            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//
-//            FileSystemResource body = new FileSystemResource(file);
-            // 文件名称
-//            headers.setContentDispositionFormData("attachment","text.xml");
-            final ByteArrayResource byteArrayResource = new ByteArrayResource(outputStream.toByteArray());
-            return bodyBuilder
-//                    .headers(headers)
-                    .body(byteArrayResource);
+        public ResponseEntity file(InputStream inputStream) {
+            final Resource resource = new InputStreamResource(inputStream);
+            return this.file(resource);
+        }
+
+        @Override
+        public ResponseEntity file(byte[] bytes) {
+            ByteArrayResource resource = new ByteArrayResource(bytes);
+            return this.file(resource);
         }
 
         @Override
@@ -138,13 +141,25 @@ public class ServerResponse{
 
         @Override
         public FileBuilder filename(String filename) {
+            this.filename = filename;
+            return this;
+        }
+
+        @Override
+        public ResponseEntity file(Resource resource) {
             return this
                     .header("Cache-Control", "no-cache, no-store, must-revalidate")
                     .header("Content-Disposition", "attachment; filename=" + filename)
                     .header("Pragma", "no-cache")
                     .header("Expires", "0")
                     .header("Last-Modified", new Date().toString())
-                    .header("ETag", String.valueOf(System.currentTimeMillis()));
+                    .header("ETag", String.valueOf(System.currentTimeMillis()))
+                    .body(resource);
+        }
+
+        @Override
+        public ResponseEntity body(Object body){
+            return bodyBuilder.body(body);
         }
 
     }
@@ -169,28 +184,34 @@ public class ServerResponse{
 
         public ResponseBuilder msg(String msg);
 
-        public ResponseBuilder header(String key, String... val) ;
-
     }
 
     public interface FileBuilder extends ResponseBuilder{
 
         public ResponseEntity file(File file) ;
 
-        public ResponseEntity file(ByteArrayOutputStream outputStream) ;
+        public ResponseEntity file(InputStream inputStream) ;
 
-        public ResponseBuilder header(String key, String... val) ;
+        public ResponseEntity file(byte[] bytes) ;
+
+        public ResponseEntity file(Resource resource);
 
         public ResponseBuilder filename(String filename);
 
     }
 
     public interface ResponseBuilder{
+        public ResponseBuilder header(String key, String... val) ;
 
+        public ResponseEntity body(Object body);
     }
 
     private static DefaultBuilder init(){
         return new DefaultBuilder();
+    }
+
+    private static DefaultBuilder httpStatus(HttpStatus httpStatus){
+        return new DefaultBuilder(httpStatus);
     }
 
     public static DefaultBuilder header(String key, String... val) {
@@ -235,9 +256,42 @@ public class ServerResponse{
                 .file(file);
     }
 
-    public static ResponseEntity file(ByteArrayOutputStream file) {
-        return init()
-                .filename("text.xml")
-                .file(file);
+    public static ResponseEntity file(InputStream inputStream) {
+        return init().file(inputStream);
     }
+
+    public static ResponseEntity file(String filename, InputStream inputStream) {
+        return init().filename(filename).file(inputStream);
+    }
+
+    public static ResponseEntity file(ExportInputStream inputStream){
+        return init().filename(inputStream.getFilename()).file(inputStream);
+    }
+
+    public static ResponseEntity file(byte[] bytes) {
+        return init().file(bytes);
+    }
+
+    public static ResponseEntity file(String filename, byte[] bytes) {
+        return init().filename(filename).file(bytes);
+    }
+
+    public static class ExportInputStream extends ByteArrayInputStream {
+        private String filename;
+
+        public ExportInputStream(String filename, byte[] buf) {
+            super(buf);
+            this.filename = filename;
+        }
+
+        public ExportInputStream(String filename, byte[] buf, int offset, int length) {
+            super(buf, offset, length);
+            this.filename = filename;
+        }
+
+        public String getFilename() {
+            return filename;
+        }
+    }
+
 }
