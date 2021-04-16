@@ -1,20 +1,13 @@
 package com.zjc.hustoj.problem.controller;
 
-import com.zjc.hustoj.core.constant.MemoryFileOutputStream;
 import com.zjc.hustoj.core.constant.ServerResponse;
+import com.zjc.hustoj.core.constant.ServerResponse.ExportInputStream;
 import com.zjc.hustoj.core.controller.BaseController;
 import com.zjc.hustoj.core.utils.PageUtils;
-import com.zjc.hustoj.core.utils.xml.JAXBUtils;
-import com.zjc.hustoj.problem.entity.ProblemEntity;
 import com.zjc.hustoj.problem.service.ProblemService;
 import com.zjc.hustoj.problem.vo.*;
-import com.zjc.hustoj.problem.xml.element.ProblemXmlBody;
-import com.zjc.hustoj.problem.xml.element.ProblemXmlEntity;
-import com.zjc.hustoj.problem.xml.element.testcase.TestCase;
-import com.zjc.hustoj.problem.xml.element.testcase.TestCaseList;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.io.FileSystemResource;
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,12 +16,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -105,22 +94,19 @@ public class ProblemController extends BaseController {
     @PostMapping("/exportByIds")
     public ResponseEntity exportByIds(@RequestBody List<Integer> ids) {
         try {
-            ByteArrayOutputStream outputStream = problemService.exportByIds(ids);
-
-//            File outputStream = new File(("/Users/david/Documents/ABC.xml"));
-            return ServerResponse.file(outputStream);
-//            return download("test.xml", outputStream);
+            ExportInputStream inputStream = problemService.exportByIds(ids);
+            return ServerResponse.file(inputStream);
         } catch (Exception e) {
             log.error("题目导出失败！", e);
             return ServerResponse.errorMsg(e.getMessage());
         }
     }
 
-    @GetMapping("/exportByRange")
-    public ResponseEntity exportByRange(RangeInfo rangeInfo) {
+    @PostMapping("/exportByRange")
+    public ResponseEntity exportByRange(@RequestBody RangeInfo rangeInfo) {
         try {
-            ByteArrayOutputStream outputStream = problemService.exportByRange(rangeInfo);
-            return ServerResponse.file(outputStream);
+            ExportInputStream inputStream = problemService.exportByRange(rangeInfo);
+            return ServerResponse.file(inputStream);
         } catch (Exception e) {
             log.error("题目导出失败！", e);
             return ServerResponse.errorMsg(e.getMessage());
