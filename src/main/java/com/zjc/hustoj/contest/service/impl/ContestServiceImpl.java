@@ -13,9 +13,6 @@ import com.zjc.hustoj.core.exception.ServiceException;
 import com.zjc.hustoj.core.utils.BeanUtils;
 import com.zjc.hustoj.core.utils.PageUtils;
 import com.zjc.hustoj.core.utils.Query;
-import com.zjc.hustoj.user.entity.UserEntity;
-import com.zjc.hustoj.user.vo.UserPageRespVo;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -80,6 +77,5 @@ public class ContestServiceImpl extends ServiceImpl<ContestDao, ContestEntity> i
         this.updateById(contestEntity);
         return BeanUtils.copyProperties(contestEntity, ContestPageRespVo.class);
     }
-
 
 }

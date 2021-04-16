@@ -7,17 +7,11 @@ import com.zjc.hustoj.core.utils.PageUtils;
 import com.zjc.hustoj.problem.service.ProblemService;
 import com.zjc.hustoj.problem.vo.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.io.*;
 import java.util.List;
 
 /**
@@ -113,21 +107,4 @@ public class ProblemController extends BaseController {
         }
     }
 
-    public static ResponseEntity<byte[]> download(String fileName, ByteArrayOutputStream byteOutPutStream) {
-        //下载文件
-        try {
-            new ByteArrayOutputStream();
-            HttpHeaders headers = new HttpHeaders();
-            MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            // 文件名称
-            headers.setContentDispositionFormData("attachment",
-                    new String(fileName.getBytes("GBK"), "ISO8859-1"));
-            ResponseEntity<byte[]> responseEntity = new ResponseEntity<byte[]>(byteOutPutStream.toByteArray(), headers, HttpStatus.OK);
-            return responseEntity;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

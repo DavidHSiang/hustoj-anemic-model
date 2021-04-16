@@ -1,7 +1,6 @@
 package com.zjc.hustoj.auth.utils;
 
 import org.apache.commons.codec.digest.DigestUtils;
-
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;

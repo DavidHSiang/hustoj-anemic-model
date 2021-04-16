@@ -2,7 +2,6 @@ package com.zjc.hustoj.contest.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zjc.hustoj.contest.entity.ContestEntity;
-import com.zjc.hustoj.user.entity.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

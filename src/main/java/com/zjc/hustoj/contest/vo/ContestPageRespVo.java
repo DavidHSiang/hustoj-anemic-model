@@ -1,7 +1,6 @@
 package com.zjc.hustoj.contest.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,7 +11,6 @@ import java.util.Date;
  */
 @Data
 public class ContestPageRespVo {
-
 
     /**
      * 竞赛 id

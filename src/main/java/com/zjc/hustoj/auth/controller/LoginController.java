@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
@@ -54,7 +53,5 @@ public class LoginController extends BaseController {
         String userId = getCurrentUserId();
         return ServerResponse.ok("登录成功", userId);
     }
-
-
 
 }

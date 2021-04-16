@@ -1,11 +1,8 @@
 package com.zjc.hustoj.core.controller;
 
 import com.zjc.hustoj.auth.utils.TokenProvider;
-import com.zjc.hustoj.core.constant.ServerResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.ResponseEntity;
-
 import javax.annotation.Resource;
 
 /**
@@ -14,7 +11,6 @@ import javax.annotation.Resource;
  */
 @Slf4j
 public class BaseController extends AbstractBaseController {
-
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
 

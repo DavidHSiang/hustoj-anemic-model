@@ -5,14 +5,12 @@ import com.zjc.hustoj.privilege.entity.PrivilegeEntity;
 import com.zjc.hustoj.auth.service.AuthService;
 import com.zjc.hustoj.privilege.service.PrivilegeService;
 import com.zjc.hustoj.auth.utils.CipherUtils;
-import com.zjc.hustoj.auth.utils.MD5Util;
 import com.zjc.hustoj.auth.vo.LoginReqVo;
 import com.zjc.hustoj.user.vo.UserPageRespVo;
 import com.zjc.hustoj.core.exception.ServiceException;
 import com.zjc.hustoj.core.utils.BeanUtils;
 import com.zjc.hustoj.user.entity.UserEntity;
 import com.zjc.hustoj.user.service.UserService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -59,9 +57,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return BeanUtils.copyProperties(userEntity, UserPageRespVo.class);
-    }
-    public static void main(String[] args) {
-        System.out.println(MD5Util.MD5Encode("81112588","UTF-8"));
     }
 
 }

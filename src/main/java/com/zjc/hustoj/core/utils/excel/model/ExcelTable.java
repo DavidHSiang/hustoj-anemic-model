@@ -1,14 +1,10 @@
 package com.zjc.hustoj.core.utils.excel.model;
 
 import com.google.common.collect.Lists;
-import com.zjc.hustoj.user.vo.RegisterInfoDTO;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

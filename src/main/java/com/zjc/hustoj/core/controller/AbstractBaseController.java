@@ -1,13 +1,9 @@
 package com.zjc.hustoj.core.controller;
 
-
 import com.zjc.hustoj.core.utils.WebUtils;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -15,7 +11,8 @@ import javax.validation.Validator;
 import java.util.Set;
 
 /**
- * 所有Controller的基类
+ * 所有 Controller 的基类
+ * @author david
  */
 public abstract class AbstractBaseController {
     /**
