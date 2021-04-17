@@ -2,7 +2,7 @@ package com.zjc.hustoj.file.controller;
 
 import com.sun.security.auth.module.UnixSystem;
 import com.zjc.hustoj.core.constant.ServerResponse;
-import com.zjc.hustoj.file.model.FileExplorer;
+import com.zjc.hustoj.file.model.DefaultFileExplorer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,7 @@ import java.util.Set;
 public class FileController {
 
     @Resource
-    private FileExplorer fileExplorer;
+    private DefaultFileExplorer defaultFileExplorer;
 
 
     @GetMapping(value = "/{path}")
@@ -50,7 +50,7 @@ public class FileController {
      */
     @GetMapping("/get/{problem-id}")
     public ResponseEntity get(@PathVariable("problem-id") String problemId){
-        File file =fileExplorer.get("problemId");
+        File file = defaultFileExplorer.get("problemId");
         BufferedReader reader = null;
         StringBuffer sbf = new StringBuffer();
         try {
